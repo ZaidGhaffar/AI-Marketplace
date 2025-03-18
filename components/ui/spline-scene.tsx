@@ -1,24 +1,37 @@
 "use client"
 
-import { Suspense, lazy } from "react"
-const Spline = lazy(() => import("@splinetool/react-spline"))
+import { useEffect } from "react"
+import Spline from "@splinetool/react-spline"
+import { Application } from "@splinetool/runtime"
 
 interface SplineSceneProps {
   scene: string
   className?: string
 }
 
+// Preload the scene
+const preloadScene = (url: string) => {
+  return new Promise((resolve) => {
+    const scene = new Application(document.createElement('canvas'))
+    scene.load(url).then(() => resolve(true))
+  })
+}
+
+let preloadedScenes = new Set<string>()
+
 export function SplineScene({ scene, className }: SplineSceneProps) {
+  useEffect(() => {
+    if (!preloadedScenes.has(scene)) {
+      preloadScene(scene).then(() => {
+        preloadedScenes.add(scene)
+      })
+    }
+  }, [scene])
+
   return (
-    <Suspense
-      fallback={
-        <div className="w-full h-full flex items-center justify-center">
-          <span className="loader"></span>
-        </div>
-      }
-    >
-      <Spline scene={scene} className={className} />
-    </Suspense>
+    <div className={className}>
+      <Spline scene={scene} />
+    </div>
   )
 }
 
