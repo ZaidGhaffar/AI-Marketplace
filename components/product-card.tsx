@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Play, Pause, ShoppingCart } from "lucide-react"
+import Image from "next/image"
 
 interface ProductCardProps {
   title: string
@@ -13,9 +14,10 @@ interface ProductCardProps {
   videoUrl: string
   category: string
   popular?: boolean
+  thumbnailUrl: string // Add this for custom thumbnail URL
 }
 
-export function ProductCard({ title, description, price, videoUrl, category, popular = false }: ProductCardProps) {
+export function ProductCard({ title, description, price, videoUrl, category, popular = false, thumbnailUrl }: ProductCardProps) {
   const [isPlaying, setIsPlaying] = useState(false)
 
   // Extract YouTube video ID from URL
@@ -33,10 +35,14 @@ export function ProductCard({ title, description, price, videoUrl, category, pop
         <div className="aspect-video bg-muted relative overflow-hidden rounded-t-lg">
           {!isPlaying ? (
             <div className="w-full h-full relative">
-              <img 
-                src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+              <Image
+                src={thumbnailUrl}
                 alt={title}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover object-center"
+                priority
+                quality={90}
               />
               <div className="absolute inset-0 bg-black/20 transition-opacity hover:bg-black/30" />
             </div>
@@ -51,13 +57,13 @@ export function ProductCard({ title, description, price, videoUrl, category, pop
           <Button
             variant="secondary"
             size="icon"
-            className="absolute bottom-3 right-3 rounded-full opacity-90 hover:opacity-100 bg-white/90 hover:bg-white"
+            className="absolute bottom-3 right-3 rounded-full opacity-90 hover:opacity-100 bg-white/90 hover:bg-white z-10"
             onClick={() => setIsPlaying(!isPlaying)}
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} />}
           </Button>
         </div>
-        <div className="absolute top-3 left-3 flex gap-2">
+        <div className="absolute top-3 left-3 flex gap-2 z-10">
           <Badge variant="secondary">{category}</Badge>
           {popular && <Badge variant="destructive">Popular</Badge>}
         </div>
@@ -81,4 +87,3 @@ export function ProductCard({ title, description, price, videoUrl, category, pop
     </Card>
   )
 }
-

@@ -1,9 +1,14 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 
 export function VideoSection() {
-  const videoRef = useRef<HTMLIFrameElement>(null)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLIFrameElement>(null);
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
 
   return (
     <section className="w-full py-20 bg-background">
@@ -16,16 +21,40 @@ export function VideoSection() {
         </h2>
 
         <div className="relative w-full max-w-7xl mx-auto aspect-[18/9] rounded-2xl overflow-hidden shadow-xl">
-
-          <iframe
-            ref={videoRef}
-            className="absolute top-0 left-0 w-full h-full"
-            src="https://www.youtube.com/embed/p9Q5a1Vn-Hk?autoplay=1&mute=1&loop=1&playlist=p9Q5a1Vn-Hk&controls=0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+          {!isPlaying ? (
+            // Thumbnail with play button
+            <div
+              className="absolute top-0 left-0 w-full h-full flex items-center justify-center cursor-pointer"
+              onClick={handlePlay}
+              style={{
+                backgroundImage: "url('https://www.thesoftwarereport.com/wp-content/uploads/2021/05/Microsoft.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              {/* Play Button */}
+              <div className="bg-black bg-opacity-50 p-4 rounded-full">
+                <svg
+                  className="w-16 h-16 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+              </div>
+            </div>
+          ) : (
+            // YouTube Video (only loads when clicked)
+            <iframe
+              ref={videoRef}
+              className="absolute top-0 left-0 w-full h-full"
+              src="https://www.youtube.com/embed/p9Q5a1Vn-Hk?autoplay=1&controls=0"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
         </div>
       </div>
     </section>
-  )
-} 
+  );
+}
